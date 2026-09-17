@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配当ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2EEE3;
+    --card-bg: #FBF9F3;
+    --ink: #24303D;
+    --ink-soft: #64707C;
+    --accent-gold: #9C7A3C;
+    --accent-gold-bg: #EFE4CC;
+    --accent-green: #3F6B4E;
+    --accent-green-bg: #E1EAE3;
+    --accent-red: #A1433B;
+    --accent-red-bg: #F1E1DE;
+    --line: #D9D2C1;
+    --danger: #A1433B;
+    --radius-s: 4px;
+    --radius-m: 8px;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1B1F27;
+      --card-bg: #242833;
+      --ink: #ECE8DE;
+      --ink-soft: #A6A497;
+      --accent-gold: #CBA75E;
+      --accent-gold-bg: #3A331F;
+      --accent-green: #7CB08D;
+      --accent-green-bg: #24322A;
+      --accent-red: #D6867B;
+      --accent-red-bg: #382522;
+      --line: #3A3F4A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1B1F27;
+    --card-bg: #242833;
+    --ink: #ECE8DE;
+    --ink-soft: #A6A497;
+    --accent-gold: #CBA75E;
+    --accent-gold-bg: #3A331F;
+    --accent-green: #7CB08D;
+    --accent-green-bg: #24322A;
+    --accent-red: #D6867B;
+    --accent-red-bg: #382522;
+    --line: #3A3F4A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  header.page-head {
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+    animation: settle 0.5s ease both;
+  }
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 28px;
+    margin: 0 0 6px;
+    letter-spacing: 0.02em;
+  }
+  .tagline {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* summary */
+  .summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+  .summary-cell {
+    background: var(--card-bg);
+    padding: 18px 16px;
+  }
+  .summary-label {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .summary-value {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .summary-value.pos { color: var(--accent-green); }
+  .summary-value.neg { color: var(--accent-red); }
+  .summary-sub {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  section {
+    margin-bottom: 44px;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .count {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  /* holding rows */
+  .list { border-top: 1px solid var(--line); }
+  .row {
+    padding: 14px 2px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .row-name {
+    font-weight: 700;
+    font-size: 15.5px;
+  }
+  .row-code {
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .row-eval {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .row-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .row-grid .val {
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .row-grid .gain.pos .val { color: var(--accent-green); }
+  .row-grid .gain.neg .val { color: var(--accent-red); }
+  .row-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 2px;
+  }
+  .link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .link-btn:hover { color: var(--ink); }
+  .link-btn.danger:hover { color: var(--accent-red); }
+
+  .empty {
+    padding: 22px 2px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* forms */
+  form.entry-form {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 12px;
+  }
+  .field-grid .full { grid-column: 1 / -1; }
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  input {
+    width: 100%;
+    padding: 8px 9px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    font-variant-numeric: tabular-nums;
+  }
+  input:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 1px;
+  }
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .form-error {
+    color: var(--accent-red);
+    font-size: 12.5px;
+    margin-top: 10px;
+  }
+  button.primary {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 9px 18px;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+  }
+  button.primary:hover { opacity: 0.85; }
+  button.primary:disabled { opacity: 0.5; cursor: default; }
+  button.ghost {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    padding: 9px 14px;
+    background: none;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+  }
+
+  .toggle-add {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    background: var(--accent-gold-bg);
+    border: none;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  /* dividend rows */
+  .div-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 2px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+    gap: 10px;
+  }
+  .div-left { min-width: 0; }
+  .div-name { font-weight: 700; }
+  .div-date { color: var(--ink-soft); font-size: 12px; }
+  .div-amount {
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-gold);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .div-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+  /* chart */
+  .chart-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    padding: 18px 16px 10px;
+    background: var(--card-bg);
+    overflow-x: auto;
+  }
+  svg text { font-family: var(--sans); }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 420px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .summary { grid-template-columns: 1fr; }
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-head">
+    <h1>配当ノート</h1>
+    <p class="tagline">保有銘柄の評価額と、受け取った配当を記録する</p>
+  </header>
+
+  <div class="summary" id="summary"></div>
+
+  <section>
+    <div class="section-head">
+      <h2>保有銘柄</h2>
+      <button class="toggle-add" id="toggleHoldingForm">+ 銘柄を追加</button>
+    </div>
+    <div id="holdingFormMount"></div>
+    <div class="list" id="holdingList"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>年間配当収入</h2>
+      <span class="count" id="divCount"></span>
+    </div>
+    <div class="chart-wrap" id="chartMount"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>配当の記録</h2>
+      <button class="toggle-add" id="toggleDivForm">+ 配当を記録</button>
+    </div>
+    <div id="divFormMount"></div>
+    <div id="divList"></div>
+  </section>
+
+  <footer>
+    データはこのMac上のサーバーにCSVファイルとして保存されます。
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  let holdings = [];
+  let dividends = [];
+
+  async function api(path, options) {
+    const res = await fetch(path, options);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.detail || `${res.status} ${res.statusText}`);
+    }
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  async function loadAll() {
+    [holdings, dividends] = await Promise.all([
+      api("/api/holdings"),
+      api("/api/dividends"),
+    ]);
+  }
+
+  const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
+  const yenPlain = new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 0 });
+
+  function fmtYen(n) { return yen.format(Math.round(n)); }
+  function fmtSigned(n) {
+    const sign = n > 0 ? "+" : n < 0 ? "−" : "";
+    return sign + yenPlain.format(Math.round(Math.abs(n)));
+  }
+
+  // ---------- Summary ----------
+  function renderSummary() {
+    const totalEval = holdings.reduce((s, h) => s + h.shares * h.currentPrice, 0);
+    const totalCost = holdings.reduce((s, h) => s + h.shares * h.costPrice, 0);
+    const gain = totalEval - totalCost;
+    const gainPct = totalCost > 0 ? (gain / totalCost) * 100 : 0;
+
+    const thisYear = new Date().getFullYear();
+    const thisYearDiv = dividends
+      .filter(d => new Date(d.date).getFullYear() === thisYear)
+      .reduce((s, d) => s + d.amount, 0);
+
+    const gainClass = gain > 0 ? "pos" : gain < 0 ? "neg" : "";
+
+    document.getElementById("summary").innerHTML = `
+      <div class="summary-cell">
+        <div class="summary-label">保有評価額の合計</div>
+        <div class="summary-value">${fmtYen(totalEval)}</div>
+        <div class="summary-sub ${gainClass}">損益 ${fmtSigned(gain)}円(${gain >= 0 ? "+" : ""}${gainPct.toFixed(1)}%)</div>
+      </div>
+      <div class="summary-cell">
+        <div class="summary-label">${thisYear}年の配当収入</div>
+        <div class="summary-value pos">${fmtYen(thisYearDiv)}</div>
+        <div class="summary-sub">記録件数 ${dividends.filter(d => new Date(d.date).getFullYear() === thisYear).length}件</div>
+      </div>
+    `;
+  }
+
+  // ---------- Holdings ----------
+  function renderHoldings() {
+    const list = document.getElementById("holdingList");
+    if (holdings.length === 0) {
+      list.innerHTML = "";
+      list.outerHTML = '<div class="empty" id="holdingList">まだ銘柄が登録されていません。「+ 銘柄を追加」から登録してください。</div>';
+      return;
+    }
+    list.innerHTML = holdings.map(h => {
+      const evalAmt = h.shares * h.currentPrice;
+      const costAmt = h.shares * h.costPrice;
+      const gain = evalAmt - costAmt;
+      const gainCls = gain > 0 ? "pos" : gain < 0 ? "neg" : "";
+      return `
+        <div class="row" data-id="${h.id}">
+          <div class="row-top">
+            <div>
+              <span class="row-name">${escapeHtml(h.name)}</span>
+              <span class="row-code">　${escapeHtml(h.code)}</span>
+            </div>
+            <div class="row-eval">${fmtYen(evalAmt)}</div>
+          </div>
+          <div class="row-grid">
+            <div>保有株数<div class="val">${yenPlain.format(h.shares)}株</div></div>
+            <div>取得単価<div class="val">${fmtYen(h.costPrice)}</div></div>
+            <div>現在値<div class="val">${fmtYen(h.currentPrice)}</div></div>
+            <div class="gain ${gainCls}">評価損益<div class="val">${fmtSigned(gain)}円</div></div>
+          </div>
+          <div class="row-actions">
+            <button class="link-btn" data-action="edit-holding" data-id="${h.id}">編集</button>
+            <button class="link-btn danger" data-action="delete-holding" data-id="${h.id}">削除</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // ---------- Holding form ----------
+  let editingHoldingId = null;
+  const holdingFormMount = document.getElementById("holdingFormMount");
+  const toggleHoldingBtn = document.getElementById("toggleHoldingForm");
+
+  function holdingFormHtml(h) {
+    h = h || { code: "", name: "", shares: "", costPrice: "", currentPrice: "" };
+    return `
+      <form class="entry-form" id="holdingForm">
+        <div class="field-grid">
+          <div class="full">
+            <label for="hf-name">銘柄名</label>
+            <input id="hf-name" required value="${escapeHtml(h.name)}" placeholder="例:トヨタ自動車">
+          </div>
+          <div>
+            <label for="hf-code">証券コード</label>
+            <input id="hf-code" value="${escapeHtml(h.code)}" placeholder="例:7203">
+          </div>
+          <div>
+            <label for="hf-shares">保有株数</label>
+            <input id="hf-shares" type="number" min="0" step="1" required value="${h.shares}">
+          </div>
+          <div>
+            <label for="hf-cost">取得単価(円)</label>
+            <input id="hf-cost" type="number" min="0" step="0.1" required value="${h.costPrice}">
+          </div>
+          <div>
+            <label for="hf-current">現在値(円)</label>
+            <input id="hf-current" type="number" min="0" step="0.1" required value="${h.currentPrice}">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary">${editingHoldingId ? "更新する" : "追加する"}</button>
+          <button type="button" class="ghost" id="hf-cancel">キャンセル</button>
+        </div>
+        <div class="form-error" id="hf-error" hidden></div>
+      </form>
+    `;
+  }
+
+  function openHoldingForm(existing) {
+    editingHoldingId = existing ? existing.id : null;
+    holdingFormMount.innerHTML = holdingFormHtml(existing);
+    document.getElementById("hf-name").focus();
+    document.getElementById("holdingForm").addEventListener("submit", onHoldingSubmit);
+    document.getElementById("hf-cancel").addEventListener("click", closeHoldingForm);
+  }
+  function closeHoldingForm() {
+    editingHoldingId = null;
+    holdingFormMount.innerHTML = "";
+  }
+  async function onHoldingSubmit(e) {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector("button[type=submit]");
+    const errorBox = document.getElementById("hf-error");
+    const data = {
+      name: document.getElementById("hf-name").value.trim(),
+      code: document.getElementById("hf-code").value.trim(),
+      shares: parseFloat(document.getElementById("hf-shares").value) || 0,
+      costPrice: parseFloat(document.getElementById("hf-cost").value) || 0,
+      currentPrice: parseFloat(document.getElementById("hf-current").value) || 0,
+    };
+    if (!data.name) return;
+    submitBtn.disabled = true;
+    try {
+      if (editingHoldingId) {
+        await api(`/api/holdings/${editingHoldingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      } else {
+        await api("/api/holdings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      }
+      closeHoldingForm();
+      await loadAll();
+      renderAll();
+    } catch (err) {
+      errorBox.textContent = "保存に失敗しました: " + err.message;
+      errorBox.hidden = false;
+      submitBtn.disabled = false;
+    }
+  }
+
+  toggleHoldingBtn.addEventListener("click", () => {
+    if (holdingFormMount.innerHTML.trim()) { closeHoldingForm(); }
+    else { openHoldingForm(null); }
+  });
+
+  document.querySelector(".wrap").addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (btn.dataset.action === "delete-holding") {
+      if (!confirm("この銘柄を削除しますか?")) return;
+      await api(`/api/holdings/${id}`, { method: "DELETE" });
+      await loadAll();
+      renderAll();
+    } else if (btn.dataset.action === "edit-holding") {
+      const h = holdings.find(x => x.id === id);
+      if (h) openHoldingForm(h);
+    } else if (btn.dataset.action === "delete-dividend") {
+      if (!confirm("この配当記録を削除しますか?")) return;
+      await api(`/api/dividends/${id}`, { method: "DELETE" });
+      await loadAll();
+      renderAll();
+    } else if (btn.dataset.action === "edit-dividend") {
+      const d = dividends.find(x => x.id === id);
+      if (d) openDivForm(d);
+    }
+  });
+
+  // ---------- Dividends ----------
+  function renderDividends() {
+    const mount = document.getElementById("divList");
+    document.getElementById("divCount").textContent = dividends.length ? `記録 ${dividends.length}件` : "";
+    if (dividends.length === 0) {
+      mount.innerHTML = '<div class="empty">まだ配当が記録されていません。「+ 配当を記録」から追加してください。</div>';
+      return;
+    }
+    const sorted = [...dividends].sort((a, b) => new Date(b.date) - new Date(a.date));
+    mount.innerHTML = sorted.map(d => `
+      <div class="div-row">
+        <div class="div-left">
+          <div class="div-name">${escapeHtml(d.name)}</div>
+          <div class="div-date">${formatDate(d.date)}</div>
+        </div>
+        <div class="div-amount">${fmtYen(d.amount)}</div>
+        <div class="div-actions">
+          <button class="link-btn" data-action="edit-dividend" data-id="${d.id}">編集</button>
+          <button class="link-btn danger" data-action="delete-dividend" data-id="${d.id}">削除</button>
+        </div>
+      </div>
+    `).join("");
+  }
+  function formatDate(s) {
+    const d = new Date(s);
+    if (isNaN(d)) return s;
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+
+  let editingDivId = null;
+  const divFormMount = document.getElementById("divFormMount");
+  const toggleDivBtn = document.getElementById("toggleDivForm");
+
+  function divFormHtml(d) {
+    d = d || { name: "", amount: "", date: new Date().toISOString().slice(0, 10) };
+    const holdingNames = holdings.map(h => `<option value="${escapeHtml(h.name)}">`).join("");
+    return `
+      <form class="entry-form" id="divForm">
+        <div class="field-grid">
+          <div class="full">
+            <label for="df-name">銘柄名</label>
+            <input id="df-name" list="holdingNames" required value="${escapeHtml(d.name)}" placeholder="例:トヨタ自動車">
+            <datalist id="holdingNames">${holdingNames}</datalist>
+          </div>
+          <div>
+            <label for="df-amount">受取配当金(円・税引後の手取り額)</label>
+            <input id="df-amount" type="number" min="0" step="1" required value="${d.amount}">
+          </div>
+          <div>
+            <label for="df-date">受取日</label>
+            <input id="df-date" type="date" required value="${d.date}">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="primary">${editingDivId ? "更新する" : "記録する"}</button>
+          <button type="button" class="ghost" id="df-cancel">キャンセル</button>
+        </div>
+        <div class="form-error" id="df-error" hidden></div>
+      </form>
+    `;
+  }
+  function openDivForm(existing) {
+    editingDivId = existing ? existing.id : null;
+    divFormMount.innerHTML = divFormHtml(existing);
+    document.getElementById("df-name").focus();
+    document.getElementById("divForm").addEventListener("submit", onDivSubmit);
+    document.getElementById("df-cancel").addEventListener("click", closeDivForm);
+  }
+  function closeDivForm() {
+    editingDivId = null;
+    divFormMount.innerHTML = "";
+  }
+  async function onDivSubmit(e) {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector("button[type=submit]");
+    const errorBox = document.getElementById("df-error");
+    const data = {
+      name: document.getElementById("df-name").value.trim(),
+      amount: parseFloat(document.getElementById("df-amount").value) || 0,
+      date: document.getElementById("df-date").value,
+    };
+    if (!data.name || !data.date) return;
+    submitBtn.disabled = true;
+    try {
+      if (editingDivId) {
+        await api(`/api/dividends/${editingDivId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      } else {
+        await api("/api/dividends", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      }
+      closeDivForm();
+      await loadAll();
+      renderAll();
+    } catch (err) {
+      errorBox.textContent = "保存に失敗しました: " + err.message;
+      errorBox.hidden = false;
+      submitBtn.disabled = false;
+    }
+  }
+  toggleDivBtn.addEventListener("click", () => {
+    if (divFormMount.innerHTML.trim()) { closeDivForm(); }
+    else { openDivForm(null); }
+  });
+
+  // ---------- Chart ----------
+  function renderChart() {
+    const mount = document.getElementById("chartMount");
+    if (dividends.length === 0) {
+      mount.innerHTML = '<div class="empty" style="border:none;padding:8px 2px;">配当を記録すると、年別のグラフが表示されます。</div>';
+      return;
+    }
+    const byYear = {};
+    dividends.forEach(d => {
+      const y = new Date(d.date).getFullYear();
+      if (!isNaN(y)) byYear[y] = (byYear[y] || 0) + d.amount;
+    });
+    const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+    const max = Math.max(...years.map(y => byYear[y]), 1);
+
+    const barW = 56;
+    const gap = 28;
+    const chartH = 160;
+    const topPad = 28;
+    const width = years.length * (barW + gap) + gap;
+    const height = chartH + topPad + 40;
+
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark" ||
+      (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.getAttribute("data-theme") !== "light");
+    const inkColor = isDark ? "#ECE8DE" : "#24303D";
+    const goldColor = isDark ? "#CBA75E" : "#9C7A3C";
+    const softColor = isDark ? "#A6A497" : "#64707C";
+
+    let bars = "";
+    years.forEach((y, i) => {
+      const val = byYear[y];
+      const h = Math.max((val / max) * chartH, 2);
+      const x = gap + i * (barW + gap);
+      const yTop = topPad + (chartH - h);
+      bars += `
+        <text x="${x + barW / 2}" y="${yTop - 8}" text-anchor="middle" font-size="12" fill="${inkColor}" font-weight="700" font-variant-numeric="tabular-nums">${yenPlain.format(Math.round(val))}</text>
+        <rect x="${x}" y="${yTop}" width="${barW}" height="${h}" fill="${goldColor}" rx="3"></rect>
+        <text x="${x + barW / 2}" y="${topPad + chartH + 20}" text-anchor="middle" font-size="12.5" fill="${softColor}">${y}</text>
+      `;
+    });
+
+    mount.innerHTML = `<svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" style="display:block;min-width:${width}px;">${bars}</svg>`;
+  }
+
+  function renderAll() {
+    renderSummary();
+    renderHoldings();
+    renderDividends();
+    renderChart();
+  }
+
+  loadAll()
+    .then(renderAll)
+    .catch(err => {
+      document.querySelector(".wrap").innerHTML =
+        `<p style="color:${'#A1433B'}">データの読み込みに失敗しました: ${escapeHtml(err.message)}</p>`;
+    });
+})();
+</script>
+</body>
+</html>
