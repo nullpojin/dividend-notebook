@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 
-from . import storage
+from . import price_sync, storage
 from .models import Dividend, DividendIn, Holding, HoldingIn
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -64,6 +64,16 @@ def remove_dividend(dividend_id: str):
     if not storage.delete_dividend(dividend_id):
         raise HTTPException(status_code=404, detail="Dividend not found")
     return {"ok": True}
+
+
+# ---------- Sync ----------
+
+@app.post("/api/sync")
+def sync_prices():
+    try:
+        return price_sync.sync()
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Sync failed: {e}")
 
 
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

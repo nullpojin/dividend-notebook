@@ -11,7 +11,7 @@ DATA_DIR = BASE_DIR / "data"
 HOLDINGS_CSV = DATA_DIR / "holdings.csv"
 DIVIDENDS_CSV = DATA_DIR / "dividends.csv"
 
-HOLDINGS_FIELDS = ["id", "code", "name", "shares", "costPrice", "currentPrice"]
+HOLDINGS_FIELDS = ["id", "code", "name", "shares", "costPrice", "currentPrice", "isFund"]
 DIVIDENDS_FIELDS = ["id", "name", "amount", "date"]
 
 _lock = Lock()
@@ -49,6 +49,7 @@ def list_holdings() -> list[dict]:
         r["shares"] = float(r["shares"])
         r["costPrice"] = float(r["costPrice"])
         r["currentPrice"] = float(r["currentPrice"])
+        r["isFund"] = str(r.get("isFund", "")).strip().lower() == "true"
     return rows
 
 

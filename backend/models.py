@@ -7,6 +7,7 @@ class HoldingIn(BaseModel):
     shares: float
     costPrice: float
     currentPrice: float
+    isFund: bool = False
 
 
 class Holding(HoldingIn):
