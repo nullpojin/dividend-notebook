@@ -7,7 +7,7 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/admin/Develop/DividendApp/venv/bin/uvicorn</string>
+        <string>/path/to/DividendApp/venv/bin/uvicorn</string>
         <string>backend.main:app</string>
         <string>--host</string>
         <string>0.0.0.0</string>
@@ -16,7 +16,7 @@
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/admin/Develop/DividendApp</string>
+    <string>/path/to/DividendApp</string>
 
     <key>RunAtLoad</key>
     <true/>
@@ -25,9 +25,9 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/admin/Develop/DividendApp/logs/server.out.log</string>
+    <string>/path/to/DividendApp/logs/server.out.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/admin/Develop/DividendApp/logs/server.err.log</string>
+    <string>/path/to/DividendApp/logs/server.err.log</string>
 </dict>
 </plist>
