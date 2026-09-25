@@ -1,3 +1,5 @@
+English | [日本語](README.ja.md)
+
 # Dividend Notebook (配当ノート)
 
 A personal dividend and holdings tracker for Japanese stocks and investment
