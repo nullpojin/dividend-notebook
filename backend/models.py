@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -8,6 +10,7 @@ class HoldingIn(BaseModel):
     costPrice: float
     currentPrice: float
     isFund: bool = False
+    taxStatus: Literal["taxable", "nisa"] = "taxable"
 
 
 class Holding(HoldingIn):

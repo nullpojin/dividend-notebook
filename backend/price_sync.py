@@ -63,7 +63,8 @@ def sync() -> dict:
                     continue
                 iso_date = d.isoformat()
                 gross = float(per_share) * h["shares"]
-                net = round(gross * (1 - WITHHOLDING_TAX_RATE))
+                tax_rate = 0.0 if h.get("taxStatus") == "nisa" else WITHHOLDING_TAX_RATE
+                net = round(gross * (1 - tax_rate))
                 if net <= 0:
                     continue
                 if already_recorded(h["name"], iso_date):
