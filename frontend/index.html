@@ -556,21 +556,35 @@
   }
 
   // ---------- Predicted annual dividend ----------
-  function latestDividendByName() {
-    const latest = {};
+  function dividendsByName() {
+    const byName = {};
     dividends.forEach(d => {
-      const cur = latest[d.name];
-      if (!cur || new Date(d.date) > new Date(cur.date)) latest[d.name] = d;
+      (byName[d.name] = byName[d.name] || []).push(d);
     });
-    return latest;
+    return byName;
   }
   function predictedAnnualDividend() {
-    const latest = latestDividendByName();
+    const byName = dividendsByName();
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 365);
     let total = 0;
     let covered = 0;
     holdings.forEach(h => {
-      const rec = latest[h.name];
-      if (rec) { total += rec.amount; covered += 1; }
+      const records = byName[h.name];
+      if (!records || records.length === 0) return;
+      covered += 1;
+      const trailing = records.filter(d => new Date(d.date) >= cutoff);
+      if (trailing.length > 0) {
+        // Sum payments over the trailing 12 months, so holdings that pay
+        // more than once a year (e.g. semi-annual) aren't undercounted by
+        // only looking at the single most recent payment.
+        total += trailing.reduce((s, d) => s + d.amount, 0);
+      } else {
+        // No payment in the last year (e.g. sparse history) — fall back to
+        // the most recent payment as a rough estimate rather than 0.
+        const latest = records.reduce((a, b) => (new Date(a.date) > new Date(b.date) ? a : b));
+        total += latest.amount;
+      }
     });
     return { total, covered, ofTotal: holdings.length };
   }
@@ -711,7 +725,7 @@
     const paymentsThisYear = dividends.filter(d => new Date(d.date).getFullYear() === thisYear).length;
     const predicted = predictedAnnualDividend();
 
-    let caption = "Estimated from each holding's most recent dividend payment.";
+    let caption = "Estimated from each holding's dividend payments over the trailing 12 months.";
     if (holdings.length > 0 && predicted.covered < predicted.ofTotal) {
       const missing = predicted.ofTotal - predicted.covered;
       caption = `Based on ${predicted.covered} of ${predicted.ofTotal} holdings — ${missing} holding${missing === 1 ? "" : "s"} ${missing === 1 ? "has" : "have"} no dividend history yet.`;
