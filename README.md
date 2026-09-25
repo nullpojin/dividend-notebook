@@ -15,9 +15,13 @@ stays entirely on your own hardware.
 - **Holdings tracking** — stocks and Japanese investment trusts (投資信託),
   with automatic valuation, unrealized gain/loss, and correct math for
   investment trusts (NAV quoted per 10,000 units, not per unit).
+- **Tax status per holding** — mark a holding as a regular taxable account
+  or NISA (tax-free), which feeds into the sync feature's tax estimate and
+  breaks out taxable vs. NISA subtotals in the dividend stats.
 - **Dividend tracking** — record payments received, see a yearly bar chart,
-  and a **projected annual dividend** estimate calculated from each
-  holding's most recent recorded payment.
+  and a **projected annual dividend** estimate: each holding's payments over
+  the trailing 12 months, summed across your portfolio (so holdings that pay
+  more than once a year aren't undercounted).
 - **One-click sync** — pulls current prices and dividend history from Yahoo
   Finance (via [`yfinance`](https://github.com/ranaroussi/yfinance)) for any
   holding with a ticker code. No API key or account needed.
@@ -56,7 +60,8 @@ DividendApp/
 │   └── dividends.csv      # Your dividend history (gitignored)
 ├── ops/
 │   └── com.dividendapp.server.plist   # macOS launchd config (auto-start)
-└── files/                 # Original design notes / reference scripts
+└── docs/
+    └── screenshots/       # README images
 ```
 
 ## Setup
@@ -89,17 +94,21 @@ only accepts connections from the same machine.
   mutual funds (投資信託) — this changes the labels to "Units"/"NAV" and
   divides the valuation math by 10,000 to match how funds are actually
   quoted (基準価額).
+- Check **"NISA (tax-free) account"** if the holding lives in a NISA
+  account — a gold "Fund" badge and/or green "NISA" badge show up next to
+  the holding's name as a reminder.
 - Tap any row to edit or delete it.
 - The summary card shows total portfolio value and unrealized P&L.
 
 ### Dividends tab
 
 - Tap **+** to record a dividend payment (name, net amount received, date).
-- The top stat is a **projected annual dividend**: the sum of each currently
-  held holding's most recently recorded dividend payment — a rough forecast
-  of this year's income based on last known payouts, not a guarantee.
-- Below that: actual amount received so far this year, a yearly bar chart,
-  and the full payment history.
+- The top stat is a **projected annual dividend**: each currently held
+  holding's payments over the trailing 12 months, summed — a rough forecast
+  based on recent payout history, not a guarantee. When both taxable and
+  NISA holdings contribute, the split is shown underneath.
+- Below that: actual amount received so far this year (also split by tax
+  status when relevant), a yearly bar chart, and the full payment history.
 
 ### Sync button
 
@@ -109,8 +118,9 @@ a ticker code set:
 - **Price**: latest quote via `yfinance`.
 - **Dividends**: historical per-share payments via `yfinance`, converted to
   an estimated *net* (after-tax) amount using Japan's standard listed-stock
-  withholding rate (20.315%). This is an approximation — it will be wrong
-  for tax-advantaged accounts (e.g. NISA) or non-standard tax situations.
+  withholding rate (20.315%) for taxable holdings, or 0% for holdings marked
+  as NISA. This is still an approximation for taxable holdings — it assumes
+  the standard rate, which won't be exact for non-standard tax situations.
 - Holdings without a ticker code (e.g. investment trusts, which aren't
   exchange-traded) are silently skipped — there's no free, reliable API for
   Japanese investment trust NAV/distribution data, so those still need to be
@@ -156,6 +166,7 @@ To stop it: `launchctl bootout gui/$(id -u)/com.dividendapp.server`
 | `costPrice` | number | Acquisition price per share/unit (per 10,000 units if `isFund`) |
 | `currentPrice` | number | Current price per share/unit (per 10,000 units if `isFund`) |
 | `isFund` | boolean | `true` if this is an investment trust (changes valuation math) |
+| `taxStatus` | string | `"taxable"` or `"nisa"` — affects the sync feature's tax estimate and the dividend stats' taxable/NISA breakdown |
 
 **`data/dividends.csv`**
 
@@ -171,9 +182,9 @@ To stop it: `launchctl bootout gui/$(id -u)/com.dividendapp.server`
 - **Single user, no auth** — this is designed to run on a private network
   (behind Tailscale or similar). There's no login system; anyone who can
   reach the server can use it.
-- **Dividend tax estimate is approximate** — auto-synced dividends assume
-  standard 20.315% withholding, which won't be accurate for NISA accounts
-  or unusual tax situations.
+- **Dividend tax estimate is approximate for taxable holdings** —
+  auto-synced dividends for non-NISA holdings assume standard 20.315%
+  withholding, which won't be accurate for unusual tax situations.
 - **Investment trusts are manual-entry only** — there's no free, reliable
   API covering Japanese mutual fund NAV and distributions the way
   `yfinance` covers exchange-traded stocks/ETFs.
