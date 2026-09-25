@@ -16,7 +16,9 @@
 
 ## スクリーンショット
 
-_(お好みでスクリーンショットを追加してください。UIは和風の「帳簿・通帳」風デザインです — 温かみのあるオフホワイトの背景、明朝体の見出し、配当額には金色のアクセント。)_
+| 保有銘柄 | 銘柄の編集 | 配当 |
+|---|---|---|
+| ![保有銘柄タブ](docs/screenshots/holdings-tab.jpg) | ![銘柄編集シート](docs/screenshots/edit-holding.jpg) | ![配当タブ](docs/screenshots/dividends-tab.jpg) |
 
 ## アーキテクチャ
 

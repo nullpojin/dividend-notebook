@@ -28,9 +28,9 @@ stays entirely on your own hardware.
 
 ## Screenshots
 
-_(Add screenshots here if you'd like — the UI is a Japanese "ledger/passbook"
-style: warm off-white background, serif headings, gold accents for
-dividend amounts.)_
+| Holdings | Edit Holding | Dividends |
+|---|---|---|
+| ![Holdings tab](docs/screenshots/holdings-tab.jpg) | ![Edit Holding sheet](docs/screenshots/edit-holding.jpg) | ![Dividends tab](docs/screenshots/dividends-tab.jpg) |
 
 ## Architecture
 
