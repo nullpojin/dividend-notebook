@@ -48,7 +48,9 @@ def sync() -> dict:
         ticker = yf.Ticker(symbol)
 
         try:
-            new_price = float(ticker.fast_info["lastPrice"])
+            # Round to avoid long floating-point tails (e.g. 247.10000610351562)
+            # that fail the frontend's number-input validation on save.
+            new_price = round(float(ticker.fast_info["lastPrice"]), 2)
             old_price = h["currentPrice"]
             storage.update_holding(h["id"], {"currentPrice": new_price})
             holdings_updated.append({"name": h["name"], "code": code, "oldPrice": old_price, "newPrice": new_price})

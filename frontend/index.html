@@ -915,17 +915,17 @@
           </div>
           <div>
             <label for="hf-shares" id="hf-shares-label">Shares</label>
-            <input id="hf-shares" type="number" min="0" step="1" required value="${h.shares}">
+            <input id="hf-shares" type="number" min="0" step="any" required value="${h.shares}">
           </div>
         </div>
         <div class="field-grid">
           <div>
             <label for="hf-cost" id="hf-cost-label">Cost Basis (¥)</label>
-            <input id="hf-cost" type="number" min="0" step="0.1" required value="${h.costPrice}">
+            <input id="hf-cost" type="number" min="0" step="any" required value="${h.costPrice}">
           </div>
           <div>
             <label for="hf-current" id="hf-current-label">Current Price (¥)</label>
-            <input id="hf-current" type="number" min="0" step="0.1" required value="${h.currentPrice}">
+            <input id="hf-current" type="number" min="0" step="any" required value="${h.currentPrice}">
           </div>
         </div>
         <div class="sheet-actions">
@@ -966,7 +966,7 @@
         <div class="field-grid">
           <div>
             <label for="df-amount">Amount (¥, after tax)</label>
-            <input id="df-amount" type="number" min="0" step="1" required value="${d.amount}">
+            <input id="df-amount" type="number" min="0" step="any" required value="${d.amount}">
           </div>
           <div>
             <label for="df-date">Date</label>
